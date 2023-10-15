@@ -14,3 +14,15 @@
  */
 
 This code heading to price agregator selection
+
+How to run this project:
+1. Download and restore to your prosgres database https://drive.google.com/file/d/1Zb_TpPuu2YHaPgZURq5YfKRbibsUK6Pg/view?usp=drive_link
+2. Change progress database conection authentication with yours in `src/database/db.js`
+3. Install dependency project using `npm install`
+4. run this application using `npm run dev` commands
+5. Download postman collection to acces this endpoint from following link https://drive.google.com/file/d/1Ly_ASfDCl0Hof6lQQJTT1pbcJt9uXLa3/view?usp=drive_link
+
+
+
+Created by Atnlie@2023
+atnlie@gmail.com
