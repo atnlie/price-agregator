@@ -114,12 +114,11 @@ const quotationSchema = Joi.object({
         .required(),
     sku_id: Joi.string()
         .min(3)
-        .max(50)
-        .required(),
+        .max(50),
     qty: Joi.string()
         .min(1)
-        .max(50)
-        .required(),
+        .max(50),
+    rfq: Joi.array()
 });
 
 exports.validateQuotation = validator(quotationSchema);

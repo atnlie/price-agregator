@@ -46,10 +46,12 @@ const addCustomer = async (req, res) => {
     try {
         const { error } = validateCustomer(req.body);
         if (error) throw error;
-
+        
+        const {customer_id, address, city, state, code_area } = req.body;
         pool.query(queries.addCustomer,
             [customer_id, address, city, state, code_area], (error, results) => {
-            if (error) {
+                if (error) {
+                
                 res.status(500).json({ message: error.message });
                 return;
             };
