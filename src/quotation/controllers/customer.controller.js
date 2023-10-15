@@ -184,7 +184,6 @@ const addRFQ = async (req, res) => {
 
         // return data response
         const rfqQuotation = [];
-        // po_id = '8131f742-1373-47c5-b861-ee7ec8d039a2';
         const bestQuotation = await getBestQuotation(po_id);
         if (bestQuotation.length > 0) {
             for (const bq of bestQuotation) {
@@ -207,7 +206,11 @@ const addRFQ = async (req, res) => {
             number_of_fleet: '',
             fee: '',
         };
-        const totalWeight = await getTotalWeight(['SIK-080080-IBB', 'UNP-200'], po_id);
+        const sku_id_list = [];
+        for (const sku of rfq) {
+            sku_id_list.push(sku.sku_id);
+        }
+        const totalWeight = await getTotalWeight(sku_id_list, po_id);
         const logisticDelivery = await getLogisticDelivery(customer_id);
         const fusoLogistic = logisticDelivery.filter((logistic) => {
             return logistic.fleet_type === 'Fuso';
@@ -229,13 +232,11 @@ const addRFQ = async (req, res) => {
             fee_delivery.fee = lowestFee.fee_delivery;
         }
        
-        // pool.query(queries.addRfq, (error, results) => {
         res.status(200).json({
             req_id: po_id,
             rfq_quotation: rfqQuotation,
             fee_delivery_estimation: fee_delivery
-        })
-        // });
+        }) 
     } catch (error) {
         throw error;
     }
