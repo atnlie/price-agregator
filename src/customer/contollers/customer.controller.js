@@ -1,5 +1,6 @@
 const pool = require('../../database/db');
 const queries = require('../queries/customer.queries');
+const { validateCustomer } = require('../../middleware/validator');
 
 const getCustomers = (req, res) => {
     try {
@@ -43,8 +44,9 @@ const getCustomerById = (req, res) => {
 
 const addCustomer = async (req, res) => {
     try {
-        const { customer_id, address, city, state, code_area } = req.body;
-        console.log(req.body);
+        const { error } = validateCustomer(req.body);
+        if (error) throw error;
+
         pool.query(queries.addCustomer,
             [customer_id, address, city, state, code_area], (error, results) => {
             if (error) {

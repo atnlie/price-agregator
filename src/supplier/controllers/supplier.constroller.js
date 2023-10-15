@@ -1,5 +1,6 @@
 const pool = require('../../database/db');
 const queries = require('../queries/supplier.queries');
+const { validateSupplier } = require('../../middleware/validator');
 
 const getSuppliers = (req, res) => {
     try {
@@ -17,6 +18,9 @@ const getSuppliers = (req, res) => {
 
 const addSuppliers = (req, res) => {
     try {
+        const { error } = validateSupplier(req.body);
+        if (error) throw error;
+
         const { supplier_id, address, city, state, code_area } = req.body;
         pool.query(queries.addSuppliers,
             [supplier_id, address, city, state, code_area], (error, results) => {

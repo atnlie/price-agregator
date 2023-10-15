@@ -1,5 +1,6 @@
 const pool = require('../../database/db');
 const queries = require('../queries/logistic.queries');
+const { validateLogistic } = require('../../middleware/validator');
 
 const getLogistics = (req, res) => {
     try {
@@ -50,6 +51,9 @@ const getLogisticByAreaCode = (req, res) => {
 
 const addLogistics = (req, res) => {
     try {
+        const { error } = validateLogistic(req.body);
+        if (error) throw error;
+        
         const { fleet_type, capacity, source, destination, cost, code_area } = req.body;
         pool.query(queries.addLogistics,
             [fleet_type, capacity, source, destination, cost, code_area], (error, results) => {

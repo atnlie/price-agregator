@@ -1,6 +1,7 @@
 const pool = require('../../database/db');
 const queries = require('../queries/quotation.queries');
 const { v4: uuidv4 } = require('uuid');
+const { validateQuotation } = require('../../middleware/validator');
 
 const getProductBySku = (sku_id) => {
     try {
@@ -123,6 +124,9 @@ const lowestFeeDelivery = (weight_in_kg, fuso_cost, tronton_cost) => {
 
 const addRFQ = async (req, res) => {
     try {
+        const { error } = validateQuotation(req.body);
+        if (error) throw error;
+
         const { customer_id, rfq } = req.body;
         po_id = uuidv4();
         const order_date = new Date().toISOString().slice(0, 10);

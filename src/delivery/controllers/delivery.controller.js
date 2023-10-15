@@ -2,6 +2,7 @@ const pool = require('../../database/db');
 const queries = require('../queries/delivery.queries');
 const custQueries = require('../../quotation/queries/quotation.queries');
 const { getTotalWeight, getLogisticDelivery, lowestFeeDelivery } = require('../../quotation/controllers/quotation.controller');
+const { validateDelivery } = require('../../middleware/validator');
 
 const getDelivery = (req, res) => {
     try {
@@ -56,6 +57,9 @@ const fleetFee = (objLogistic, fleet_type) => {
 
 const addDelivery = async (req, res) => {
     try {
+        const { error } = validateDelivery(req.body);
+        if (error) throw error;
+
         const { po_id } = req.body;
         const po = await getPoDetail(po_id);
         let customer_id = "";

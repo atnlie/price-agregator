@@ -1,5 +1,6 @@
 const pool = require('../../database/db');
 const queries = require('../queries/product.queries');
+const { validateProduct } = require('../../middleware/validator');
 
 const getProducts = (req, res) => {
     try {
@@ -32,6 +33,9 @@ const getProductById = (req, res) => {
 
 const addProduct = (req, res) => {
     try {
+        const { error } = validateProduct(req.body);
+        if (error) throw error;
+        
         const { sku_id, name, weight_in_kg, unit_of_measurement } = req.body;
         pool.query(queries.addProduct,
             [sku_id, name, weight_in_kg, unit_of_measurement], (error, results) => {

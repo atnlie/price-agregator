@@ -1,5 +1,6 @@
 const pool = require('../../database/db');
 const queries = require('../queries/pricelist.queries');
+const { validatePricelist } = require('../../middleware/validator');
 
 const getPricelist = (req, res) => {
     try {
@@ -49,6 +50,9 @@ const getPriceListBySupplier = (req, res) => {
 
 const addPricelist = (req, res) => {
     try {
+        const { error } = validatePricelist(req.body);
+        if (error) throw error;
+        
         const { supplier_id, sku_id, price_per_unit, stock } = req.body;
         // check if sku_id and supplier_id exists
         pool.query(queries.checkSupplierAndSkuExists, [supplier_id, sku_id], (error, results) => {
