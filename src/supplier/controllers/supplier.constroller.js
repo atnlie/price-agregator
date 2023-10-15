@@ -18,7 +18,6 @@ const getSuppliers = (req, res) => {
 const addSuppliers = (req, res) => {
     try {
         const { supplier_id, address, city, state, code_area } = req.body;
-        console.log(req.body);
         pool.query(queries.addSuppliers,
             [supplier_id, address, city, state, code_area], (error, results) => {
                 if (error) {
