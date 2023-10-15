@@ -5,6 +5,7 @@ const customerRoutes = require('./src/customer/routes');
 const supplierRoutes = require('./src/supplier/routes');
 const productRoutes = require('./src/product/routes');
 const pricelistRoute = require('./src/pricelist/routes');
+const logisticRoutes = require('./src/logistic/routes');
 
 // const dotenv = require("dotenv")
 // dotenv.config()
@@ -28,6 +29,7 @@ app.use('/api/v1/quotation', quotationRoutes);
 app.use('/api/v1/suppliers', supplierRoutes);
 app.use('/api/v1/products', productRoutes);
 app.use('/api/v1/pricelist', pricelistRoute);
+app.use('/api/v1/logistics', logisticRoutes);
 
 
 
