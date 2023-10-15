@@ -1,4 +1,7 @@
 const express = require('express');
+
+const rateLimitMiddleware = require("./src/middleware/ratelimit");
+
 const quotationRoutes = require('./src/quotation/routes');
 const deliveryRoutes = require('./src/delivery/routes');
 const customerRoutes = require('./src/customer/routes');
@@ -14,6 +17,7 @@ const bodyParser = require('body-parser');
 const app = express();
 const port = process.env.PORT || 3000;
 
+app.use(rateLimitMiddleware);
 app.use(express.json());
 app.use(bodyParser.urlencoded({
     extended: true
