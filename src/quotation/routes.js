@@ -8,4 +8,6 @@ router.get('/', customerController.getCustomers);
 
 router.get('/:id', customerController.getCustomerById);
 
+router.post('/rfq', customerController.addRFQ);
+
 module.exports = router;
