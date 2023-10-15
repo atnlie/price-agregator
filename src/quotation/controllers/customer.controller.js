@@ -79,11 +79,71 @@ const addHistoricalPO = (bestOffer) => {
             [customer_id, order_date, sku_id, quantity, uom, usp, po_id],
             (error, results) => {
                 if (error) reject(error)
-                resolve('success');   
+                resolve({ message: 'historical po is created successfuly' });   
         }));
     } catch (error) {
         throw error;
     }
+}
+
+const getBestQuotation = (po_id) => {
+    try {
+        return new Promise((resolve, reject) => pool.query(queries.getBestQuotation, [po_id], (error, results) => {
+            if (error) reject(error)
+            resolve(results.rows);
+        }));
+    } catch (error) {
+        throw error;
+    }
+}
+
+const getLogisticDelivery = (customer_id) => {
+    try {
+        return new Promise((resolve, reject) => pool.query(queries.getLogisticDelivery, [customer_id], (error, results) => {
+            if (error) reject(error)
+            resolve(results.rows);
+        }));
+    } catch (error) {
+        throw error;
+    }
+}
+
+const getTotalWeight = (sku_id_list, customer_id) => {
+    try {
+        return new Promise((resolve, reject) => pool.query(queries.getTotalWeight, [sku_id_list, customer_id], (error, results) => {
+            if (error) reject(error)
+            resolve(results.rows);
+        }));
+    } catch (error) {
+        throw error;
+    }
+}
+
+const lowestFeeDelivery = (weight_in_kg, fuso_cost, tronton_cost) => {
+    /*
+        - Assume only use fuso and tronton in one PO
+        - Use only weight as a parameter
+        TODO: For best fee we can combine both fuso and tronton in Ver 2.0
+        TODO: For calculate for you, we need to use dimention as a parameter to eliminate over dimention in next Ver 2.0
+    */
+    // fuso
+    const feeFuso = (Math.ceil((weight_in_kg / 1000) / 8)) * fuso_cost;
+
+    const fFuso = {
+        fee_delivery: feeFuso,
+        fleet_type: 'Fuso - 8 Ton',
+        fleet_number: Math.ceil((weight_in_kg / 1000) / 8),
+        weight_in_ton: Math.ceil(weight_in_kg / 1000)
+    };
+    // tronton
+    const feeTronton = (Math.ceil((weight_in_kg / 1000) / 22)) * tronton_cost;
+    const fTronton = {
+        fee_delivery: feeTronton,
+        fleet_type: 'Tronton - 22 Ton',
+        fleet_number: Math.ceil((weight_in_kg / 1000) / 22),
+        weight_in_ton: Math.ceil(weight_in_kg / 1000)
+    };
+    return feeFuso < feeTronton ? fFuso : fTronton;
 }
 
 const addRFQ = async (req, res) => {
@@ -105,8 +165,7 @@ const addRFQ = async (req, res) => {
         // add hostorical po
         for (const quotation of rfq) {
             const result = await getBestPrice(quotation.sku_id, quotation.qty);
-            console.log('quotation -> result');
-            console.log(result);
+            
             if (result.length >= 0 && result?.message !== 'out of stock') {
                 const bestOffer = ({
                     sku_id: quotation.sku_id,
@@ -122,12 +181,60 @@ const addRFQ = async (req, res) => {
                 addHistoricalPO(bestOffer);
             }
         };
-       
-        
-        // return data response
 
+        // return data response
+        const rfqQuotation = [];
+        // po_id = '8131f742-1373-47c5-b861-ee7ec8d039a2';
+        const bestQuotation = await getBestQuotation(po_id);
+        if (bestQuotation.length > 0) {
+            for (const bq of bestQuotation) {
+                rfqQuotation.push({
+                    'sku_id': bq.sku_id,
+                    'quantity': bq.quantity,
+                    'uom': bq.unit_of_measurement,
+                    'price': bq.unit_selling_price,
+                    'sub_total_price': bq.sub_total_price,
+                })
+            }
+        }
+        
+        const fee_delivery = {
+            address: '',
+            city: '',
+            total_weight_in_kg: 'kg',
+            total_weight_in_ton: 'ton',
+            fleet_type: '',
+            number_of_fleet: '',
+            fee: '',
+        };
+        const totalWeight = await getTotalWeight(['SIK-080080-IBB', 'UNP-200'], po_id);
+        const logisticDelivery = await getLogisticDelivery(customer_id);
+        const fusoLogistic = logisticDelivery.filter((logistic) => {
+            return logistic.fleet_type === 'Fuso';
+        });
+
+        const trontonLogistic = logisticDelivery.filter((logistic) => {
+            return logistic.fleet_type === 'Tronton';
+        });
+
+        const lowestFee = lowestFeeDelivery(totalWeight[0]?.total_weight, fusoLogistic[0]?.cost || -1, trontonLogistic[0]?.cost || -1);
+
+        if (logisticDelivery.length > 0) {
+            fee_delivery.address = logisticDelivery[0]?.address || '-';
+            fee_delivery.city = logisticDelivery[0]?.city || '-';
+            fee_delivery.total_weight_in_kg = `${totalWeight[0]?.total_weight || '-'} kg`;
+            fee_delivery.total_weight_in_ton = `${totalWeight[0]?.total_weight / 1000 || '-'} ton`;
+            fee_delivery.fleet_type = lowestFee.fleet_type;
+            fee_delivery.number_of_fleet = lowestFee.fleet_number;
+            fee_delivery.fee = lowestFee.fee_delivery;
+        }
+       
         // pool.query(queries.addRfq, (error, results) => {
-            res.status(200).json({ message: 'RFQ added successfully' })
+        res.status(200).json({
+            req_id: po_id,
+            rfq_quotation: rfqQuotation,
+            fee_delivery_estimation: fee_delivery
+        })
         // });
     } catch (error) {
         throw error;
