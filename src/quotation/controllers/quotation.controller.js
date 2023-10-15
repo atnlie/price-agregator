@@ -1,40 +1,6 @@
 const pool = require('../../database/db');
-const queries = require('../queries/customer.queries');
+const queries = require('../queries/quotation.queries');
 const { v4: uuidv4 } = require('uuid');
-
-const getCustomers = (req, res) => {
-    try {
-        pool.query(queries.getCustomers, (error, results) => {
-            if (error) throw error;
-
-            if (results.rows.length === 0) {
-                res.status(200).json({ message: 'No customers found' });
-            } else {
-                res.status(200).json(results.rows);
-            }
-        });
-    } catch (error) {
-       throw error;
-    }
-};
-
-const getCustomerById = (req, res) => {
-    try {
-        const { id } = req.params;
-        pool.query(queries.getCustomerById, [id], (error, results) => {
-            if (error) throw error;
-
-            if (results.rows.length === 0) {
-                res.status(200).json({ message: 'No customers found' });
-            } else {
-                res.status(200).json(results.rows);
-            }
-        });
-    } catch (error) {
-        throw error;
-    }
-
-};
 
 const getProductBySku = (sku_id) => {
     try {
@@ -50,7 +16,7 @@ const getProductBySku = (sku_id) => {
            
         }));
     } catch (error) {
-        throw error;
+       res.status(500).json({ message: error.message });
     }
 };
 
@@ -67,7 +33,7 @@ const getBestPrice = (sku_id, qty) => {
            
         }));
     } catch (error) {
-        throw error;
+        res.status(500).json({ message: error.message });
     }
 };
 
@@ -82,7 +48,7 @@ const addHistoricalPO = (bestOffer) => {
                 resolve({ message: 'historical po is created successfuly' });   
         }));
     } catch (error) {
-        throw error;
+         res.status(500).json({ message: error.message });
     }
 }
 
@@ -93,7 +59,7 @@ const getBestQuotation = (po_id) => {
             resolve(results.rows);
         }));
     } catch (error) {
-        throw error;
+        res.status(500).json({ message: error.message });
     }
 }
 
@@ -104,7 +70,7 @@ const getLogisticDelivery = (customer_id) => {
             resolve(results.rows);
         }));
     } catch (error) {
-        throw error;
+         res.status(500).json({ message: error.message });
     }
 }
 
@@ -115,7 +81,7 @@ const getTotalWeight = (sku_id_list, customer_id) => {
             resolve(results.rows);
         }));
     } catch (error) {
-        throw error;
+         res.status(500).json({ message: error.message });
     }
 }
 
@@ -127,23 +93,32 @@ const lowestFeeDelivery = (weight_in_kg, fuso_cost, tronton_cost) => {
         TODO: For calculate for you, we need to use dimention as a parameter to eliminate over dimention in next Ver 2.0
     */
     // fuso
-    const feeFuso = (Math.ceil((weight_in_kg / 1000) / 8)) * fuso_cost;
 
-    const fFuso = {
-        fee_delivery: feeFuso,
-        fleet_type: 'Fuso - 8 Ton',
-        fleet_number: Math.ceil((weight_in_kg / 1000) / 8),
-        weight_in_ton: Math.ceil(weight_in_kg / 1000)
-    };
-    // tronton
-    const feeTronton = (Math.ceil((weight_in_kg / 1000) / 22)) * tronton_cost;
-    const fTronton = {
-        fee_delivery: feeTronton,
-        fleet_type: 'Tronton - 22 Ton',
-        fleet_number: Math.ceil((weight_in_kg / 1000) / 22),
-        weight_in_ton: Math.ceil(weight_in_kg / 1000)
-    };
-    return feeFuso < feeTronton ? fFuso : fTronton;
+    try {
+        const feeFuso = (Math.ceil((weight_in_kg / 1000) / 8)) * fuso_cost;
+
+        const fFuso = {
+            fee_delivery: feeFuso,
+            fleet_type: 'Fuso',
+            fleet_number: Math.ceil((weight_in_kg / 1000) / 8),
+            weight_in_ton: Math.ceil(weight_in_kg / 1000),
+            fleet_capacity: '8 Ton'
+        };
+        // tronton
+        const feeTronton = (Math.ceil((weight_in_kg / 1000) / 22)) * tronton_cost;
+        const fTronton = {
+            fee_delivery: feeTronton,
+            fleet_type: 'Tronton',
+            fleet_number: Math.ceil((weight_in_kg / 1000) / 22),
+            weight_in_ton: Math.ceil(weight_in_kg / 1000),
+            fleet_capacity: '22 Ton'
+        };
+        return feeFuso < feeTronton ? fFuso : fTronton;
+    } catch (error) {
+        return {
+            error: error.message,
+        };
+    }
 }
 
 const addRFQ = async (req, res) => {
@@ -238,12 +213,13 @@ const addRFQ = async (req, res) => {
             fee_delivery_estimation: fee_delivery
         }) 
     } catch (error) {
-        throw error;
+        res.status(500).json({ message: error.message });
     }
 };
 
 module.exports = {
-    getCustomers,
-    getCustomerById,
-    addRFQ
+    addRFQ,
+    getTotalWeight,
+    getLogisticDelivery,
+    lowestFeeDelivery
 };

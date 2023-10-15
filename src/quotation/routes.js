@@ -1,13 +1,13 @@
 const { Router } = require('express');
-const customerController = require('./controllers/customer.controller');
+const customerController = require('./controllers/quotation.controller');
 
 
 const router = Router();
 
-router.get('/', customerController.getCustomers);
+// router.get('/', customerController.getCustomers);
 
-router.get('/:id', customerController.getCustomerById);
+// router.get('/:id', customerController.getCustomerById);
 
-router.post('/rfq', customerController.addRFQ);
+router.post('/', customerController.addRFQ);
 
 module.exports = router;

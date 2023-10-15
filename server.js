@@ -1,6 +1,7 @@
 const express = require('express');
-// const agregatorRoutes = require('./src/agregator/routes');
 const quotationRoutes = require('./src/quotation/routes');
+const deliveryRoutes = require('./src/delivery/routes');
+const customerRoutes = require('./src/customer/routes');
 
 // const dotenv = require("dotenv")
 // dotenv.config()
@@ -18,8 +19,9 @@ app.get('/', (req, res) => {
     res.send('Price Agregator version 1.0 by Atnlie - 2023');
 });
 
+app.use('/api/v1/customers', customerRoutes);
+app.use('/api/v1/delivery', deliveryRoutes);
 app.use('/api/v1/quotation', quotationRoutes);
-
 
 
 app.listen(3000, () => {
