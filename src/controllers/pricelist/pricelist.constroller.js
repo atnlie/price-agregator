@@ -1,6 +1,6 @@
 const pool = require('../../database/db');
 const queries = require('../../queries/pricelist/pricelist.queries');
-const { validatePricelist } = require('../../middleware/validator');
+const { validatePricelist, validatePricelistStock, validatePricelistPrice } = require('../../middleware/validator');
 
 const getPricelist = (req, res) => {
     try {
@@ -105,11 +105,43 @@ const removeBySkuAndSupplier = (req, res) => {
     }
 }
 
+const updatePricelistStok = (req, res) => {
+    try {
+        const { error } = validatePricelistStock(req.body);
+        if (error) throw error;
+
+        const { supplier_id, sku_id, stock } = req.body; 
+        pool.query(queries.updateStock, [stock, supplier_id, sku_id], (error, results) => {
+            if (error) throw error
+            res.status(200).json({ message: 'Stock updated successfuly' });
+        });
+    } catch(error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+const updatePricelistPrice = (req, res) => {
+    try {
+        const { error } = validatePricelistPrice(req.body);
+        if (error) throw error;
+
+        const { supplier_id, sku_id, price } = req.body; 
+        pool.query(queries.updatePricePerUnit, [price, supplier_id, sku_id], (error, results) => {
+            if (error) throw error
+            res.status(200).json({ message: 'Stock updated successfuly' });
+        });
+    } catch(error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
 module.exports = { 
     getPricelist,
     getPriceListBySku,
     getPriceListBySupplier,
     addPricelist,
     removePricelistById,
-    removeBySkuAndSupplier
+    removeBySkuAndSupplier,
+    updatePricelistStok,
+    updatePricelistPrice
  }

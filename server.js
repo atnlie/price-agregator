@@ -10,9 +10,6 @@ const productRoutes = require('./src/routes/product/routes');
 const pricelistRoute = require('./src//routes/pricelist/routes');
 const logisticRoutes = require('./src/routes/logistic/routes');
 
-// const dotenv = require("dotenv")
-// dotenv.config()
-
 const bodyParser = require('body-parser');
 const app = express();
 const port = process.env.PORT || 3000;

@@ -1,6 +1,6 @@
 const pool = require('../../database/db');
 const queries = require('../../queries/logistic/logistic.queries');
-const { validateLogistic } = require('../../middleware/validator');
+const { validateLogistic, validateLogisticCost, validateLogisticCodeArea } = require('../../middleware/validator');
 
 const getLogistics = (req, res) => {
     try {
@@ -77,10 +77,42 @@ const removeLogisticById = (req, res) => {
     };
 };
 
+const updateLogisticCost = (req, res) => {
+    try {
+        const { error } = validateLogisticCost(req.body);
+        if (error) throw error;
+
+        const { cost, logistic_id } = req.body;
+        pool.query(queries.updateLogisticCost, [cost, logistic_id], (error, results) => {
+            if (error) throw error;
+            res.status(200).json({ message: 'Logistic cost updated successfuly' });
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+const updateLogisticCodeArea = (req, res) => {
+    try {
+        const { error } = validateLogisticCodeArea(req.body);
+        if (error) throw error;
+
+        const { code_area, logistic_id } = req.body;
+        pool.query(queries.updateLogisticCodeArea, [code_area, logistic_id], (error, results) => {
+            if (error) throw error;
+            res.status(200).json({ message: 'Logistic cost updated successfuly' });
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
 module.exports = {
     getLogistics,
     getLogisticById,
     getLogisticByAreaCode,
     addLogistics,
-    removeLogisticById
+    removeLogisticById,
+    updateLogisticCost,
+    updateLogisticCodeArea
 }

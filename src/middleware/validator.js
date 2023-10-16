@@ -147,3 +147,64 @@ const supplierSchema = Joi.object({
 });
 
 exports.validateSupplier = validator(supplierSchema);
+
+const pricelistStockSchema = Joi.object({
+    supplier_id: Joi.string()
+        .min(3)
+        .max(20)
+        .required(),
+    sku_id: Joi.string()
+        .min(3)
+        .max(50)
+        .required(),
+    stock: Joi.number()
+        .min(1)
+        .max(999999999999999)
+        .required(),
+});
+
+exports.validatePricelistStock = validator(pricelistStockSchema);
+
+
+const pricelistPriceSchema = Joi.object({
+    supplier_id: Joi.string()
+        .min(3)
+        .max(20)
+        .required(),
+    sku_id: Joi.string()
+        .min(3)
+        .max(50)
+        .required(),
+    price: Joi.number()
+        .min(1)
+        .max(999999999999999)
+        .required(),
+});
+
+exports.validatePricelistPrice = validator(pricelistPriceSchema);
+
+const logisticCostSchema = Joi.object({
+    logistic_id: Joi.number()
+        .min(1)
+        .max(999999999999999)
+        .required(),
+    cost: Joi.number()
+        .min(1)
+        .max(999999999999999)
+        .required(),
+});
+
+exports.validateLogisticCost = validator(logisticCostSchema);
+
+const logisticCodeAreaSchema = Joi.object({
+    logistic_id: Joi.number()
+        .min(1)
+        .max(999999999999999)
+        .required(),
+    code_area: Joi.number()
+        .min(1)
+        .max(999)
+        .required(),
+});
+
+exports.validateLogisticCodeArea = validator(logisticCodeAreaSchema);
