@@ -40,10 +40,10 @@ const getBestPrice = (sku_id, qty) => {
 
 const addHistoricalPO = (bestOffer) => {
     try {
-        const { customer_id, order_date, sku_id, quantity, uom, usp, po_id } = bestOffer;
+        const { customer_id, order_date, sku_id, quantity, uom, usp, po_id, supplier_id } = bestOffer;
         
         return new Promise((resolve, reject) => pool.query(queries.addHistoricalPO,
-            [customer_id, order_date, sku_id, quantity, uom, usp, po_id],
+            [customer_id, order_date, sku_id, quantity, uom, usp, po_id, supplier_id],
             (error, results) => {
                 if (error) reject(error)
                 resolve({ message: 'historical po is created successfuly' });   
@@ -156,6 +156,7 @@ const addRFQ = async (req, res) => {
                     usp: result[0].price_per_unit,
                     wikg: result[0].weight_in_kg,
                     quantity: quotation.qty,
+                    supplier_id: result[0].supplier_id,
                 });
                 addHistoricalPO(bestOffer);
             }
