@@ -1,5 +1,5 @@
 const pool = require('../../database/db');
-const queries = require('../queries/customer.queries');
+const queries = require('../../queries/customer/customer.queries');
 const { validateCustomer } = require('../../middleware/validator');
 
 const getCustomers = (req, res) => {

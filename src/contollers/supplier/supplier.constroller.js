@@ -1,5 +1,5 @@
 const pool = require('../../database/db');
-const queries = require('../queries/supplier.queries');
+const queries = require('../../queries/supplier/supplier.queries');
 const { validateSupplier } = require('../../middleware/validator');
 
 const getSuppliers = (req, res) => {
