@@ -7,7 +7,7 @@ const deliveryRoutes = require('./src/routes/delivery/routes');
 const customerRoutes = require('./src/routes/customer/routes');
 const supplierRoutes = require('./src/routes/supplier/routes');
 const productRoutes = require('./src/product/routes');
-const pricelistRoute = require('./src/pricelist/routes');
+const pricelistRoute = require('./src//routes/pricelist/routes');
 const logisticRoutes = require('./src/routes/logistic/routes');
 
 // const dotenv = require("dotenv")

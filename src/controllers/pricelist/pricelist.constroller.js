@@ -1,5 +1,5 @@
 const pool = require('../../database/db');
-const queries = require('../queries/pricelist.queries');
+const queries = require('../../queries/pricelist/pricelist.queries');
 const { validatePricelist } = require('../../middleware/validator');
 
 const getPricelist = (req, res) => {
