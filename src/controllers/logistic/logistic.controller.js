@@ -1,5 +1,5 @@
 const pool = require('../../database/db');
-const queries = require('../queries/logistic.queries');
+const queries = require('../../queries/logistic/logistic.queries');
 const { validateLogistic } = require('../../middleware/validator');
 
 const getLogistics = (req, res) => {
