@@ -1,5 +1,5 @@
 const pool = require('../../database/db');
-const queries = require('../queries/quotation.queries');
+const queries = require('../../queries/quotation/quotation.queries');
 const { v4: uuidv4 } = require('uuid');
 const { validateQuotation } = require('../../middleware/validator');
 
