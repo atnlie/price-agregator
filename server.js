@@ -2,8 +2,8 @@ const express = require('express');
 
 const rateLimitMiddleware = require("./src/middleware/ratelimit");
 
-const quotationRoutes = require('./src/quotation/routes');
-const deliveryRoutes = require('./src/delivery/routes');
+const quotationRoutes = require('./src/routes/quotation/routes');
+const deliveryRoutes = require('./src/routes/delivery/routes');
 const customerRoutes = require('./src/routes/customer/routes');
 const supplierRoutes = require('./src/routes/supplier/routes');
 const productRoutes = require('./src/product/routes');

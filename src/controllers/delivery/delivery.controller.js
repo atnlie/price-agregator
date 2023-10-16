@@ -1,7 +1,7 @@
 const pool = require('../../database/db');
-const queries = require('../queries/delivery.queries');
-const custQueries = require('../../quotation/queries/quotation.queries');
-const { getTotalWeight, getLogisticDelivery, lowestFeeDelivery } = require('../../quotation/controllers/quotation.controller');
+const queries = require('../../delivery/queries/delivery.queries');
+const custQueries = require('../../queries/quotation/quotation.queries');
+const { getTotalWeight, getLogisticDelivery, lowestFeeDelivery } = require('../quotation/quotation.controller');
 const { validateDelivery } = require('../../middleware/validator');
 
 const getDelivery = (req, res) => {
